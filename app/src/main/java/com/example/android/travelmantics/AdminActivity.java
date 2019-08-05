@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -37,15 +38,17 @@ import io.grpc.okhttp.internal.Util;
 
 public class AdminActivity extends AppCompatActivity {
 
-private FirebaseDatabase mFirebaseDatabase;
-private static final int PICTURE_RESULT= 42;
-private DatabaseReference mDatabaseReference;
-EditText titletext;
-EditText descriptiontext;
-EditText costtext;
-HolidayDeal deal;
-ImageView imageView;
-private Button uploadImagebtn;
+    private FirebaseDatabase mFirebaseDatabase;
+    private static final String TAG = "AdminActivity";
+    private static final int PICTURE_RESULT = 42;
+    private DatabaseReference mDatabaseReference;
+    EditText titletext;
+    EditText descriptiontext;
+    EditText costtext;
+
+    HolidayDeal deal;
+    ImageView imageView;
+    private Button uploadImagebtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,53 +60,53 @@ private Button uploadImagebtn;
         mFirebaseDatabase = Utils.mFirebaseDatabase;
         mDatabaseReference = Utils.mDatabaseReference;
 
-        titletext = (EditText)findViewById(R.id.deal_title);
+        titletext = (EditText) findViewById(R.id.deal_title);
         descriptiontext = (EditText) findViewById(R.id.deal_description);
-        costtext = (EditText)findViewById(R.id.deal_cost);
-        imageView= (ImageView) findViewById(R.id.imageView);
-
+        costtext = (EditText) findViewById(R.id.deal_cost);
+        imageView = (ImageView) findViewById(R.id.imageView);
 
 
         Intent intent = getIntent();
-        HolidayDeal deal =(HolidayDeal) intent.getSerializableExtra("Holiday Deal");
-        if (deal== null){
+        HolidayDeal deal = (HolidayDeal) intent.getSerializableExtra("Holiday Deal");
+        if (deal == null) {
             // got there by clicking new travel deal and therefore create new holiday deal
             deal = new HolidayDeal();
         }
-        this.deal= deal;
+        this.deal = deal;
         titletext.setText(deal.getTitle());
         descriptiontext.setText(deal.getDescription());
         costtext.setText(deal.getCost());
 
+
         showImage(deal.getImageUrl());
 
 
-
-         uploadImagebtn = (Button)findViewById(R.id.select_image_button);
+        uploadImagebtn = (Button) findViewById(R.id.select_image_button);
         uploadImagebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent(Intent.ACTION_GET_CONTENT) ;
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/jpeg");
-                intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
-                startActivityForResult(intent.createChooser(intent,"insert picture"), PICTURE_RESULT);
-                Log.d("Image inserted", "success!");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(intent.createChooser(intent, "insert picture"), PICTURE_RESULT);
+                Log.d("Image upload button", "searching for Image to upload");
             }
         });
-;
+        ;
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.save_menu,menu);
-        if (Utils.isAdmin){
+        inflater.inflate(R.menu.save_menu, menu);
+        if (Utils.isAdmin) {
             menu.findItem(R.id.menu_delete).setVisible(true);
             menu.findItem(R.id.menu_save).setVisible(true);
             enableEditTexts(true);
             findViewById(R.id.select_image_button).setEnabled(true);
 
-        }else{
+        } else {
 
             menu.findItem(R.id.menu_delete).setVisible(false);
             menu.findItem(R.id.menu_save).setVisible(false);
@@ -141,6 +144,7 @@ private Button uploadImagebtn;
         deal.setDescription(descriptiontext.getText().toString());
         deal.setCost(costtext.getText().toString());
 
+
         if (deal.getId() == null) {
             //create new deal
             mDatabaseReference.push().setValue(deal);
@@ -150,89 +154,111 @@ private Button uploadImagebtn;
         }
     }
 
-        private void deleteDeal() {
-            if (deal==null){
-                return;
-            }
-            mDatabaseReference.child(deal.getId()).removeValue();
-            if (deal.getImageName() !=null&& deal.getImageName().isEmpty() ==false){
-                StorageReference picRef = Utils.mStorage.getReference().child(deal.getImageName());
-                picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Delete Image","Image has been successfully deleted");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Log.d("Delete Image",e.getMessage());
-
-                    }
-                });
-            }
+    private void deleteDeal() {
+        if (deal == null) {
+            return;
         }
+        mDatabaseReference.child(deal.getId()).removeValue();
+        if (deal.getImageName() != null && deal.getImageName().isEmpty() == false) {
+            StorageReference picRef = Utils.mStorage.getReference().child(deal.getImageName());
+            picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("Delete Image", "Image has been successfully deleted");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
-        //go back to the list
-        private void backToList(){
-            Intent intent = new Intent (this,UserActivity.class);
-            startActivity(intent);
+                    Log.d("Delete Image", e.getMessage());
+
+                }
+            });
         }
+    }
 
-    public void clear(){
+    //go back to the list
+    private void backToList() {
+        Intent intent = new Intent(this, UserActivity.class);
+        startActivity(intent);
+    }
+
+    public void clear() {
         titletext.setText("");
         descriptiontext.setText("");
         costtext.setText("");
         titletext.requestFocus();
     }
 
-    private void enableEditTexts(boolean isEnabled){
+    private void enableEditTexts(boolean isEnabled) {
         titletext.setEnabled(isEnabled);
         descriptiontext.setEnabled(isEnabled);
         costtext.setEnabled(isEnabled);
-}
+    }
 
-       @Override
+    //uploading image
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==PICTURE_RESULT && resultCode == RESULT_OK) {
+        if (requestCode == PICTURE_RESULT && resultCode == RESULT_OK) {
             assert data != null;
             Uri imageUri = data.getData();
             assert imageUri != null;
-            StorageReference reference = Utils.mStorageReference.child(imageUri.getLastPathSegment());
-             UploadTask uploadTask = reference.putFile(imageUri);
-             uploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                 @Override
-                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                     Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
-                     while(!urlTask.isSuccessful()) ;
-                     Uri downloadUrl = urlTask.getResult();
-                     String url= downloadUrl.toString();
-                     String pictureName =taskSnapshot.getStorage().getPath();
-                         deal.setImageUrl(url);
-                         deal.setImageName(pictureName);
-                         Log.d("url:", url);
-                         Log.d("Name", pictureName);
-                         showImage(url);
+            final StorageReference reference = Utils.mStorageReference.
+                    child(Objects.requireNonNull(imageUri.getLastPathSegment()));
 
-                     }
+            final UploadTask uploadTask = reference.putFile(imageUri);
 
-
-
-             });
-
+            uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot,
+                    Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    // Task continuation to get the download URL
+                    return reference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        String downloadUri = Objects.requireNonNull(task.getResult()).toString();
+                        String fileName = uploadTask.getSnapshot().getStorage().getPath();
+                        Log.e(TAG, "onComplete: -----------------" + fileName);
+                        deal.setImageUrl(downloadUri);
+                        deal.setImageName(fileName);
+                        showImage(downloadUri);
+                    } else {
+                        Toast.makeText(AdminActivity.this, "", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
-    public void showImage (String url){
-        if (url != null && !url.isEmpty()){
-            int width= Resources.getSystem().getDisplayMetrics().widthPixels;
+    //displaying image
+    public void showImage(String url) {
+        if (url != null && !url.isEmpty()) {
+            int width = Resources.getSystem().getDisplayMetrics().widthPixels;
             Picasso.get()
                     .load(url)
-                    .resize(width,width*2/3)
+                    .resize(width, width * 2 / 3)
                     .centerCrop()
                     .into(imageView);
         }
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
     }
 }

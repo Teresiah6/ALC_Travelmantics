@@ -10,9 +10,10 @@ public class HolidayDeal implements Serializable {
     private String imageUrl;
     private String imageName;
 
-    public HolidayDeal () {}
+    public HolidayDeal() {
+    }
 
-    public HolidayDeal( String title, String description, String cost, String imageUrl, String imageName) {
+    public HolidayDeal(String title, String description, String cost, String imageUrl, String imageName) {
         this.setId(id);
         this.setTitle(title);
         this.setDescription(description);

@@ -12,4 +12,5 @@
     <string name="delete">Delete</string>
     <string name="log_out">Log Out</string>
     <string name="upload_image">Upload Image</string>
+    <string name="textviewRv">TextView</string>
 </resources>

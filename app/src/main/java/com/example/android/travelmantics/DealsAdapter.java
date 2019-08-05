@@ -2,12 +2,14 @@ package com.example.android.travelmantics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +32,7 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
     private ChildEventListener mChildListener;
     private ImageView imageDeal;
 
-    public DealsAdapter (){
+    public DealsAdapter() {
         //Utils.openFirebaseReference("holidayDeals");
         //reference to Util
         mFirebaseDatabase = Utils.mFirebaseDatabase;
@@ -42,10 +44,10 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
 
                 HolidayDeal holidayDeal = dataSnapshot.getValue(HolidayDeal.class);
                 assert holidayDeal != null;
-                Log.d("Deal:", holidayDeal.getTitle() );
+                Log.d("Deal:", holidayDeal.getTitle());
                 holidayDeal.setId(dataSnapshot.getKey());
                 deals.add(holidayDeal);
-                notifyItemInserted(deals.size()-1);
+                notifyItemInserted(deals.size() - 1);
 
             }
 
@@ -69,22 +71,22 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
 
             }
         };
-      //  deals = Utils.holidayDeals;
+        //  deals = Utils.holidayDeals;
         mDatabaseReference.addChildEventListener(mChildListener);
     }
 
     @NonNull
     @Override
     public DealViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context =parent.getContext();
-        View itemView = LayoutInflater.from(context). inflate(R.layout.recycler_view_rows, parent,false);
-        return  new DealViewHolder(itemView);
+        Context context = parent.getContext();
+        View itemView = LayoutInflater.from(context).inflate(R.layout.recycler_view_rows, parent, false);
+        return new DealViewHolder(itemView);
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull DealViewHolder holder, int position) {
-        HolidayDeal holidayDeal =deals.get(position);
+        HolidayDeal holidayDeal = deals.get(position);
         holder.bind(holidayDeal);
 
     }
@@ -94,7 +96,7 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
         return deals.size();
     }
 
-    public class DealViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class DealViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView titleTextView;
         TextView descriptionTextView;
         TextView costTextView;
@@ -105,17 +107,17 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
             titleTextView = (TextView) itemView.findViewById(R.id.titleTextView);
             descriptionTextView = (TextView) itemView.findViewById(R.id.descriptionTextView);
             costTextView = (TextView) itemView.findViewById(R.id.costTextView);
-           imageDeal = (ImageView) itemView.findViewById(R.id.dealImage);
+            imageDeal = (ImageView) itemView.findViewById(R.id.dealImage);
             itemView.setOnClickListener(this);
         }
 
-        public void bind (HolidayDeal holidayDeal){
+        public void bind(HolidayDeal holidayDeal) {
             //takes holidayDeal as parameter and puts into the textview
             titleTextView.setText(holidayDeal.getTitle());
             descriptionTextView.setText(holidayDeal.getDescription());
             costTextView.setText(holidayDeal.getCost());
             showImage(holidayDeal.getImageUrl());
-            Log.d("Show Image", "Image successfully displayed");
+            Log.d("Show Image", "Image being uploaded");
 
         }
 
@@ -125,21 +127,23 @@ public class DealsAdapter extends RecyclerView.Adapter<DealsAdapter.DealViewHold
             Log.d("Clicked", String.valueOf(position));
             HolidayDeal selectedDeal = deals.get(position);
             // open new activity to view deal
-            Intent intent = new Intent (view.getContext(), AdminActivity.class);
-            intent.putExtra("Holiday Deal",selectedDeal);
+            Intent intent = new Intent(view.getContext(), AdminActivity.class);
+            intent.putExtra("Holiday Deal", selectedDeal);
             view.getContext().startActivity(intent);
 
         }
-        private void showImage(String url){
-            if (url != null && url.isEmpty()== false){
+
+        private void showImage(String url) {
+            if (url != null && url.isEmpty() == false) {
                 Picasso.get()
                         .load(url)
-                        .resize(160,160)
-                       .centerCrop ()
+                        .resize(160, 160)
+                        .centerCrop()
                         .into(imageDeal);
             }
 
         }
     }
+
 
 }

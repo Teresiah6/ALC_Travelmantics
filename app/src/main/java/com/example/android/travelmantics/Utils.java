@@ -36,18 +36,18 @@ public class Utils {
     public static StorageReference mStorageReference;
 
 
-
-    private Utils () {}
+    private Utils() {
+    }
 
 
     // open reference of a child
-    public static void  openFirebaseReference (String reference, final UserActivity callerActivity){
-        if (utils == null){
+    public static void openFirebaseReference(String reference, final UserActivity callerActivity) {
+        if (utils == null) {
             utils = new Utils();
             mFirebaseDatabase = FirebaseDatabase.getInstance();
-            caller =callerActivity;
+            caller = callerActivity;
             mFirebaseAuth = FirebaseAuth.getInstance();
-            mAuthListener= new FirebaseAuth.AuthStateListener() {
+            mAuthListener = new FirebaseAuth.AuthStateListener() {
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     // first see if user is logged in to avoid being redirected to login screen
@@ -61,8 +61,9 @@ public class Utils {
                     Toast.makeText(callerActivity.getBaseContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
 
 
-                };
+                }
 
+                ;
 
 
             };
@@ -80,15 +81,15 @@ public class Utils {
         mDatabaseReference = mFirebaseDatabase.getReference().child(reference);
     }
 
-    public static void attachAuthListener (){
+    public static void attachAuthListener() {
         mFirebaseAuth.addAuthStateListener(mAuthListener);
     }
 
-    public static void detachAuthListener (){
+    public static void detachAuthListener() {
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
     }
 
-    private static void signIn (){
+    private static void signIn() {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(), // for email sigin
                 new AuthUI.IdpConfig.GoogleBuilder().build()); //for google sigin
@@ -102,17 +103,18 @@ public class Utils {
                         .build(),
                 RC_SIGN_IN);
     }
-    private  static void checkAdmin(String uid){
+
+    private static void checkAdmin(String uid) {
         Utils.isAdmin = false;
-        DatabaseReference reference= mFirebaseDatabase.getReference().child("administrators")
+        DatabaseReference reference = mFirebaseDatabase.getReference().child("administrators")
                 .child(uid);
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                Utils.isAdmin =true;
+                Utils.isAdmin = true;
                 caller.displayMenu();
-                Log.d("Admin","You are an administrator");
+                Log.d("Admin", "You are an administrator");
 
             }
 
@@ -135,12 +137,13 @@ public class Utils {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        } ;
+        };
         reference.addChildEventListener(childEventListener);
 
     }
-    public static void connectStorage(){
+
+    public static void connectStorage() {
         mStorage = FirebaseStorage.getInstance();
-        mStorageReference= mStorage.getReference().child("deals_pics");
+        mStorageReference = mStorage.getReference().child("deals_pics");
     }
 }

@@ -6,11 +6,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,22 +22,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ChildEventListener;
 
 
-
 import java.util.ArrayList;
 
 
-
 public class UserActivity extends AppCompatActivity {
-   ArrayList<HolidayDeal> deals;
-   private FirebaseDatabase mFirebaseDatabase;
-   private DatabaseReference mDatabaseReference;
-   private ChildEventListener mChildListener;
+    ArrayList<HolidayDeal> deals;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private ChildEventListener mChildListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
-
 
 
     }
@@ -44,10 +43,10 @@ public class UserActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.user_activity_menu, menu);
-        MenuItem insertMenu =menu.findItem(R.id.insert_menu);
-        if (Utils.isAdmin == true){
+        MenuItem insertMenu = menu.findItem(R.id.insert_menu);
+        if (Utils.isAdmin == true) {
             insertMenu.setVisible(true);
-        }else{
+        } else {
             insertMenu.setVisible(false);
         }
 
@@ -57,9 +56,9 @@ public class UserActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.insert_menu:
-                Intent intent = new Intent (this, AdminActivity.class);
+                Intent intent = new Intent(this, AdminActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.logout_menu:
@@ -67,8 +66,8 @@ public class UserActivity extends AppCompatActivity {
                         .signOut(this)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
-                             Log.d("Log out", "user Logged out");
-                             Utils.attachAuthListener();
+                                Log.d("Log out", "user Logged out");
+                                Utils.attachAuthListener();
                             }
                         });
                 Utils.detachAuthListener();
@@ -96,7 +95,19 @@ public class UserActivity extends AppCompatActivity {
     }
 
 
-    public void displayMenu(){
+    public void displayMenu() {
         invalidateOptionsMenu(); // shows that the contents of the Menu have changed
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
     }
 }

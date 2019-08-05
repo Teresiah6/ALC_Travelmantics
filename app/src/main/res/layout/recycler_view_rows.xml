@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margins"
         android:layout_marginLeft="@dimen/standard_margins"
-        android:text="TextView"
+        android:text="@string/textviewRv"
         android:textSize="@dimen/title_text_size"
         app:layout_constraintStart_toEndOf="@+id/dealImage"
         app:layout_constraintTop_toTopOf="parent" />
@@ -34,8 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margins"
         android:layout_marginLeft="@dimen/standard_margins"
-        android:layout_marginTop="@dimen/standard_margins"
-        android:text="TextView"
+        android:text="@string/textviewRv"
         app:layout_constraintStart_toEndOf="@+id/dealImage"
         app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
@@ -46,7 +45,7 @@
         android:layout_marginTop="@dimen/standard_margins"
         android:layout_marginEnd="@dimen/margin_user_others"
         android:layout_marginRight="@dimen/margin_user_others"
-        android:text="TextView"
+        android:text="@string/textviewRv"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/price_text_size"
         app:layout_constraintEnd_toEndOf="parent"
